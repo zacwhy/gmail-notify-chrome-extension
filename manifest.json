@@ -15,6 +15,7 @@
 
   "permissions": [
     "alarms",
+    "notifications",
     "https://mail.google.com/"
   ]
 }
