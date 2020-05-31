@@ -1,6 +1,6 @@
 'use strict'
 
-const gmailUrl = 'https://mail.google.com/mail/u/1/'
+const gmailUrl = 'https://mail.google.com/mail/u/0/'
 
 main()
 
@@ -76,9 +76,13 @@ function goToInbox() {
     const re = new RegExp('^' + gmailUrl)
     const inboxTab = tabs.find(tab => tab.url && re.test(tab.url))
     if (inboxTab) {
-      chrome.tabs.update(inboxTab.id, {selected: true})
+      chrome.tabs.update(inboxTab.id, {active: true}, tab => {
+        chrome.windows.update(tab.windowId, {focused: true})
+      })
     } else {
-      chrome.tabs.create({url: gmailUrl})
+      chrome.tabs.create({url: gmailUrl}, tab => {
+        chrome.windows.update(tab.windowId, {focused: true})
+      })
     }
   })
   chrome.browserAction.setBadgeText({text: ''})
