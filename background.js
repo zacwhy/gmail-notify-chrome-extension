@@ -27,10 +27,19 @@ function main() {
 
 function check() {
   fetch(gmailUrl + 'feed/atom')
-    .then(response => response.text())
-    .then(update)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.status + ' ' + response.statusText)
+      }
+      return response.text()
+    })
+    .then(data => {
+      update(data)
+    })
     .catch(error => {
-      console.log('Error: ', error)
+      console.error('Error: ', error)
+      chrome.browserAction.setBadgeBackgroundColor({color: '#F00'})
+      chrome.browserAction.setBadgeText({text: '!'})
     })
 }
 
@@ -39,6 +48,7 @@ function update(data) {
   console.log('feed', xml)
 
   const fullcount = xml.querySelector('feed > fullcount').textContent
+  chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]})
   chrome.browserAction.setBadgeText({text: fullcount === '0' ? '' : fullcount})
 
   chrome.notifications.getAll(notifications => {
